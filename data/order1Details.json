@@ -1,0 +1,27 @@
+[
+    {
+        "key": 1,
+        "drugName": "胰岛素",
+        "code": "20193jdqqe1dc",
+        "expireDate": "20190908",
+        "num": 10,
+        "unit": "支",
+        "price": 120.0,
+        "fee": 1200.0,
+        "position": "202-22",
+        "remark": ""
+    },
+    {
+        "key": 2,
+        "drugName": "急支糖浆",
+        "code": "20193jdqqe1aee",
+        "expireDate": "20170908",
+        "num": 20,
+        "unit": "盒",
+        "price": 20.0,
+        "fee": 400.0,
+        "position": "202-23",
+        "remark": ""
+
+    }
+  ]

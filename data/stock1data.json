@@ -1,0 +1,35 @@
+[
+    {
+        "key": 1,
+        "no": "test2103893u13",
+        "type": "入库",
+        "time": "2019-09-12",
+        "creator": "管理员",
+        "validateTime": "2019-09-12",
+        "validator": "审核人",
+        "remark": "这是备注",
+        "status": "状态"
+      },
+      {
+        "key": 2,
+        "no": "key210323413",
+        "type": "入库",
+        "time": "2019-09-12",
+        "creator": "管理员",
+        "validateTime": "2019-09-12",
+        "validator": "审核人",
+        "remark": "这是备注",
+        "status": "状态"
+      },
+      {
+        "key": 3,
+        "no": "aaey210323413",
+        "type": "入库",
+        "time": "2019-09-12",
+        "creator": "管理员",
+        "validateTime": "2019-09-12",
+        "validator": "审核人",
+        "remark": "这是备注",
+        "status": "状态"
+      }
+]

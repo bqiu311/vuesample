@@ -1,0 +1,35 @@
+[
+    {
+        "key": 4,
+        "no": "jins2103893u13",
+        "type": "入库",
+        "time": "2016-09-12",
+        "creator": "管理员",
+        "validateTime": "2019-09-12",
+        "validator": "审核人",
+        "remark": "这是备注",
+        "status": "1"
+      },
+      {
+        "key": 5,
+        "no": "iuuww210323413",
+        "type": "入库",
+        "time": "2018-09-12",
+        "creator": "管理员",
+        "validateTime": "2019-09-12",
+        "validator": "审核人",
+        "remark": "这是备注",
+        "status": "1"
+      },
+      {
+        "key": 6,
+        "no": "aade2210323413",
+        "type": "出库",
+        "time": "2017-09-12",
+        "creator": "管理员",
+        "validateTime": "2019-09-12",
+        "validator": "审核人",
+        "remark": "这是备注",
+        "status": "1"
+      }
+]

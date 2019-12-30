@@ -1,128 +1,79 @@
 ;(function () {
-    const template = `<div>
-                <a-table :columns="columns" :dataSource="data" bordered>
-                <template
-                v-for="col in ['name', 'age', 'address']"
-                :slot="col"
-                slot-scope="text, record, index"
-                >
-                <div :key="col">
-                    <a-input
-                    v-if="record.editable"
-                    style="margin: -5px 0"
-                    :value="text"
-                    @change="e => handleChange(e.target.value, record.key, col)"
-                    />
-                    <template v-else
-                    >{{text}}</template
-                    >
-                </div>
-                </template>
-                <template slot="operation" slot-scope="text, record, index">
-                <div class="editable-row-operations">
-                    <span v-if="record.editable">
-                    <a @click="() => save(record.key)">Save</a>
-                    <a-popconfirm title="Sure to cancel?" @confirm="() => cancel(record.key)">
-                        <a>Cancel</a>
-                    </a-popconfirm>
-                    </span>
-                    <span v-else>
-                    <a @click="() => edit(record.key)">Edit</a>
-                    </span>
-                </div>
-                </template>
-            </a-table>
-  </div>`
-    
-  const columns = [
-    {
-      title: 'name',
-      dataIndex: 'name',
-      width: '25%',
-      scopedSlots: { customRender: 'name' },
-    },
-    {
-      title: 'age',
-      dataIndex: 'age',
-      width: '15%',
-      scopedSlots: { customRender: 'age' },
-    },
-    {
-      title: 'address',
-      dataIndex: 'address',
-      width: '40%',
-      scopedSlots: { customRender: 'address' },
-    },
-    {
-      title: 'operation',
-      dataIndex: 'operation',
-      scopedSlots: { customRender: 'operation' },
-    },
-  ];
-
-  const data = [];
-  for (let i = 0; i < 100; i++) {
-    data.push({
-      key: i.toString(),
-      name: `Edrward ${i}`,
-      age: 32,
-      address: `London Park no. ${i}`,
-      editable: true,
-    });
-  }
-
-    window.OrderList = {
-      // 声明当前子组件接收父组件传递的属性
-        props: {
-          empList: Array,
-          deleteEmp: Function
+  const template = `<div>
+                          <a-table :columns="columns" :dataSource="data" :customRow="rowClick" bordered>
+                            <template slot="operation" slot-scope="text, record, index">
+                              <div class="editable-row-operations">
+                                  <span>
+                                  <a @click="() => edit(record.key)">编辑</a>
+                                  </span>
+                              </div>
+                            </template>
+                          </a-table>
+                          <a-table :columns="drugListcolumns" :dataSource="drugDetailsData" bordered />
+                          <a-modal :maskClosable="maskClosable" width="100%" title="编辑药品" v-model="visible" @ok="hideModal" okText="确认" cancelText="取消">
+                                    <drug-details :drugListcolumnsProps="drugListcolumns" :drugDetailsDataProps="drugDetailsData"/>
+                            </a-modal>
+                    </div>`
+  window.OrderList = {
+      props: {
+        columns: Array,
+        drugListcolumns: Array
+      },
+      components: {
+        DrugDetails
+      },
+      template,
+      data() {
+          return {
+            visible: false,
+            maskClosable: false,
+            data: [],
+            drugDetailsData: [],
+            rowClick: record => ({
+              on: {
+                click: () => {
+                  this.fetchOrderDrugDeOrdertails(record.key)
+                }
+              }
+            })
+          };
         },
-        template, // template: template
-        // components: {
-        //   Item // Item: Item
-        // }
-        data() {
-            this.cacheData = data.map(item => ({ ...item }));
-            return {
-              data,
-              columns,
-            };
+      created() {
+          PubSub.subscribe('stockChange',  (event, stockId) => {
+            axios.get(`http://127.0.0.1:5500/data/stock${stockId}data.json`)
+            .then(response => {
+                this.drugDetailsData = []
+                this.data = response.data
+            })
+          })
+
+          PubSub.subscribe('NewDrugEditor',  (event, num) => {
+            this.visible = true
+        })
+
+      },
+      methods: {
+        hideModal() {
+          this.visible = false;
+        },
+          fetchOrderDrugDeOrdertails(orderId) {
+            this.drugDetailsData = []
+            axios.get(`http://127.0.0.1:5500/data/order${orderId}Details.json`)
+            .then(response => {
+                this.drugDetailsData = response.data
+            })
           },
-        methods: {
-            handleChange(value, key, column) {
-              const newData = [...this.data];
-              const target = newData.filter(item => key === item.key)[0];
-              if (target) {
-                target[column] = value;
-                this.data = newData;
-              }
-            },
-            edit(key) {
-              const newData = [...this.data];
-              const target = newData.filter(item => key === item.key)[0];
-              if (target) {
-                target.editable = true;
-                this.data = newData;
-              }
-            },
-            save(key) {
-              const newData = [...this.data];
-              const target = newData.filter(item => key === item.key)[0];
-              if (target) {
-                delete target.editable;
-                this.data = newData;
-                this.cacheData = newData.map(item => ({ ...item }));
-              }
-            },
-            cancel(key) {
-              const newData = [...this.data];
-              const target = newData.filter(item => key === item.key)[0];
-              if (target) {
-                Object.assign(target, this.cacheData.filter(item => key === item.key)[0]);
-                delete target.editable;
-                this.data = newData;
-              }
+          handleChange(value, key, column) {
+            const newData = [...this.data];
+            const target = newData.filter(item => key === item.key)[0];
+            if (target) {
+              target[column] = value;
+              this.data = newData;
             }
-        }
-    }
+          },
+          edit(key) {
+            this.visible = true;
+          }
+      }
+  }
 })()
