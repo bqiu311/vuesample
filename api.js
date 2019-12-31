@@ -2,6 +2,8 @@ let baseUrl = 'http://192.168.32.218:83'
 let api = {
     stock: {
         stockList: {
+
+            //https://ih.zlsoft.com/drug/house/GetDrugStorehouseByCond?user=ps&servicetype=1&status=1
             url: `${baseUrl}/api/DrugStorehouse/GetDrugStorehouseByCond?user=ps&servicetype=1&status=1`,
             method: 'Get'
         },
