@@ -7,6 +7,7 @@ let api = {
             url: `${baseUrl}/api/DrugStorehouse/GetDrugStorehouseByCond?user=ps&servicetype=1&status=1`,
             method: 'Get'
         },
+        //https://ih.zlsoft.com/drug/storage/GetDrugOtherInStorageHeadByID?id=949
         GetDrugOtherInStorageHeadByCondition: {
             url: `${baseUrl}/api/DrugOtherInStorage/GetDrugOtherInStorageHeadByCondition`,
             method: 'Post'
