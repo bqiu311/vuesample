@@ -1,0 +1,3 @@
+{
+    "获取库房":"{\"code\":200,\"Success":true,"Msg":"","Data":[{"StatusDisplay":"启用","ID":"85","Code":"01","Name":"西药库","BrevityCode":"xyk","ParentID":null,"ServiceType":"1","AccountUnit":"1","DrugTypes":"5,6","Status":"1"},{"StatusDisplay":"启用","ID":"86","Code":"02","Name":"中药库","BrevityCode":"zyk","ParentID":"","ServiceType":"1","AccountUnit":"1","DrugTypes":"7","Status":"1"}]}"
+}
