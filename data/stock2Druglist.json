@@ -1,0 +1,18 @@
+[
+    {
+        "key": 1,
+        "drugName": "头孢克苏颗粒",
+        "code": "20193jdqqe1dc",
+        "expireDate": "20190908",
+        "unit": "盒",
+        "price": 40.0
+    },
+    {
+        "key": 2,
+        "drugName": "头孢克肟咀嚼片",
+        "code": "20193jdqqe1aee",
+        "expireDate": "20170908",
+        "unit": "盒",
+        "price": 60.0
+    }
+  ]

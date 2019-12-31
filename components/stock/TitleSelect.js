@@ -15,17 +15,16 @@
       </div>`
 
     window.TitleSelect = {
-        template, // template: template,
+        template,
 
-        data () { // alt+shift 
+        data () { 
             return {
                 stockList: [],
-                currentStockId: -1,
                 validateState: 0
             }
         },
         created() {
-            axios.get('http://127.0.0.1:5500/data/stock.json')
+            axios.get('http://192.168.31.167:5500/data/stock.json')
             .then(response => {
                 this.stockList = response.data
             })
@@ -36,8 +35,8 @@
                 PubSub.publish('NewDrugEditor', 1)
             },
             handleStockChange(id) {
-                this.currentStockId = id
-                PubSub.publish('stockChange', id)
+                const target = this.stockList.find(item => item.id === id);
+                PubSub.publish('stockChange', target)
             },
             handleStateChange(value){
                 this.validateState = value

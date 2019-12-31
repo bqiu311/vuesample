@@ -11,7 +11,7 @@
                           </a-table>
                           <a-table :columns="drugListcolumns" :dataSource="drugDetailsData" bordered />
                           <a-modal :maskClosable="maskClosable" width="100%" title="编辑药品" v-model="visible" @ok="hideModal" okText="确认" cancelText="取消">
-                                    <drug-details :drugListcolumnsProps="drugListcolumns" :drugDetailsDataProps="drugDetailsData"/>
+                                    <drug-details :currentStockProp="currentStock" :drugListcolumnsProp="drugListcolumns" :drugDetailsDataProp="drugDetailsData"/>
                             </a-modal>
                     </div>`
   window.OrderList = {
@@ -29,6 +29,7 @@
             maskClosable: false,
             data: [],
             drugDetailsData: [],
+            currentStock: null,
             rowClick: record => ({
               on: {
                 click: () => {
@@ -39,8 +40,9 @@
           };
         },
       created() {
-          PubSub.subscribe('stockChange',  (event, stockId) => {
-            axios.get(`http://127.0.0.1:5500/data/stock${stockId}data.json`)
+          PubSub.subscribe('stockChange',  (event,stock) => {
+            this.currentStock = stock
+            axios.get(`http://192.168.31.167:5500/data/stock${stock.id}data.json`)
             .then(response => {
                 this.drugDetailsData = []
                 this.data = response.data
@@ -58,18 +60,11 @@
         },
           fetchOrderDrugDeOrdertails(orderId) {
             this.drugDetailsData = []
-            axios.get(`http://127.0.0.1:5500/data/order${orderId}Details.json`)
+            axios.get(`http://192.168.31.167:5500/data/order${orderId}Details.json`)
             .then(response => {
                 this.drugDetailsData = response.data
+                PubSub.publish('DrugEdit', this.drugDetailsData)
             })
-          },
-          handleChange(value, key, column) {
-            const newData = [...this.data];
-            const target = newData.filter(item => key === item.key)[0];
-            if (target) {
-              target[column] = value;
-              this.data = newData;
-            }
           },
           edit(key) {
             this.visible = true;
