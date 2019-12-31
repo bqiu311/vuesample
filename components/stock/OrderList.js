@@ -11,13 +11,16 @@
                           </a-table>
                           <a-table :columns="drugListcolumns" :dataSource="drugDetailsData" bordered />
                           <a-modal :maskClosable="maskClosable" width="100%" title="编辑药品" v-model="visible" @ok="hideModal" okText="确认" cancelText="取消">
-                                    <drug-details :currentStockProp="currentStock" :drugListcolumnsProp="drugListcolumns" :drugDetailsDataProp="drugDetailsData"/>
+                                    <drug-details :stockListProp="stockListProp" :currentStockProp="currentStockProp" :drugListcolumnsProp="drugListcolumns" :drugDetailsDataProp="drugDetailsData"/>
                             </a-modal>
                     </div>`
   window.OrderList = {
       props: {
         columns: Array,
-        drugListcolumns: Array
+        drugListcolumns: Array,
+        currentStockProp: Object,
+        currentStateProp: String,
+        stockListProp: Array
       },
       components: {
         DrugDetails
@@ -29,24 +32,32 @@
             maskClosable: false,
             data: [],
             drugDetailsData: [],
-            currentStock: null,
+            // currentStock: null,
             rowClick: record => ({
               on: {
                 click: () => {
-                  this.fetchOrderDrugDeOrdertails(record.key)
+                  this.fetchOrderDrugDeOrdertails(record.ID)
                 }
               }
             })
           };
         },
       created() {
-          PubSub.subscribe('stockChange',  (event,stock) => {
-            this.currentStock = stock
-            axios.get(`http://192.168.31.167:5500/data/stock${stock.id}data.json`)
-            .then(response => {
-                this.drugDetailsData = []
-                this.data = response.data
-            })
+          PubSub.subscribe('conditionChange',  (event,stockId) => {
+            sendRequest(
+              api.stock.GetDrugOtherInStorageHeadByCondition,
+              {
+                StorehouseID: this.currentStockProp.ID,
+                Status: this.currentStateProp
+              },
+              response => {
+                  console.log("获取库房单据头列表",response.data.Data)
+                  this.drugDetailsData = []
+                  this.data = response.data.Data
+              },
+              exception =>{
+              }
+            )
           })
 
           PubSub.subscribe('NewDrugEditor',  (event, num) => {
@@ -60,11 +71,17 @@
         },
           fetchOrderDrugDeOrdertails(orderId) {
             this.drugDetailsData = []
-            axios.get(`http://192.168.31.167:5500/data/order${orderId}Details.json`)
-            .then(response => {
-                this.drugDetailsData = response.data
+
+            sendRequest(
+              api.stock.GetDrugOtherInStorageDetailById,
+              [{key: 'id',value: orderId}],
+              response => {
+                this.drugDetailsData = response.data.Data
                 PubSub.publish('DrugEdit', this.drugDetailsData)
-            })
+              },
+              exception =>{
+              }
+            )
           },
           edit(key) {
             this.visible = true;

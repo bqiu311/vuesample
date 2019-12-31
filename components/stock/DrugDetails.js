@@ -1,8 +1,10 @@
 ;(function () {
     const template = `<div>
-                        当前库房:{{currentStockProp.name}},{{currentStockProp.id}}
+                        <a-select v-model="currentStockProp.ID" @change="handleCurrentStockChange">
+                            <a-select-option v-for="d in stockListProp" :key="d.ID" :value="d.ID">{{d.Name}}</a-select-option>
+                        </a-select>
                         <a-button class="editable-add-btn" @click="handleAdd">添加一行</a-button>
-                        <a-table bordered :dataSource="drugDetailsData" :columns="drugListcolumnsProp">
+                        <a-table rowKey="ID" bordered :dataSource="drugDetailsData" :columns="drugListcolumnsProp">
                             <template slot="drugName" slot-scope="text, record">
                                 <div class="editable-cell">
                                     <a-select v-if="record.editable" style="width: 120px" @change="handleChange">
@@ -16,7 +18,7 @@
                                 <a-popconfirm
                                     v-if="drugDetailsData.length"
                                     title="删除?"
-                                    @confirm="() => onDelete(record.key)">
+                                    @confirm="() => onDelete(record)">
                                         <a href="javascript:;">删除</a>
                                 </a-popconfirm>
                             </template>
@@ -27,33 +29,39 @@
         props: {
           drugListcolumnsProp: Array,
           drugDetailsDataProp: Array,
-          currentStockProp: Object
+          currentStockProp: Object,
+          stockListProp: Array,
         },
         template,
         data() {
             return {
                 drugDetailsData: [],
-                // drugListcolumns: [],
                 stockDrugList: [],
-                currentStock: null
+                currentStock: null,
+                // stockList: []
             }
           },
         created() {
+        //   sendRequest(
+        //     api.stock.stockList,
+        //     null,
+        //     response => {
+        //         this.stockList = response.data.Data
+        //         console.log('test',this.stockList)
+        //     },
+        //     exception =>{
+        //     }
+        // )
+
           PubSub.subscribe('DrugEdit',  (event, drugDetailsData) => {
-            console.log("传递的单据",drugDetailsData)
             this.drugDetailsData = drugDetailsData
-            axios.get(`http://192.168.31.167:5500/data/stock${this.currentStockProp.id}Druglist.json`)
+            axios.get(`http://127.0.0.1:5500/data/stock${this.currentStockProp.ID}Druglist.json`)
             .then(response => {
                 this.stockDrugList = response.data
             })
           })
            // this.drugListcolumns = this.drugListcolumnsProp
             // this.currentStock = this.currentStockProp
-           
-
-        },
-        updated() {
-            // this.drugDetailsData = this.drugDetailsDataProp
         },
         methods: {
             // onCellChange(key, dataIndex, value) {
@@ -64,14 +72,17 @@
             //       this.drugDetailsData = dataSource;
             //     }
             //   },
-              onDelete(key) {
+            handleCurrentStockChange(id) {
+              this.currentStock = this.stockListProp.find(item => item.ID === id)
+            },
+              onDelete(record) {
                 const dataSource = [...this.drugDetailsData];
-                this.drugDetailsData = dataSource.filter(item => item.key !== key);
+                this.drugDetailsData = dataSource.filter(item => item.ID !== record.ID);
               },
             handleAdd(){
                 let indexKey = this.drugDetailsData.length + 1
                 this.drugDetailsData.push({
-                    key: 999,
+                    ID: 999,
                     drugName: '',
                     code: '',
                     expireDate: "",

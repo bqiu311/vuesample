@@ -1,61 +1,78 @@
 ;(function () {
     const template = `<div id="#app">
-                            <title-select/>
-                            <order-list :columns="columns" :drugListcolumns="drugListcolumns"/>
+                            <title-select @select_state="selectState" @select_stock="selectStock" :stockListProp="stockList"/>
+                            <order-list :currentStateProp="currentState" :stockListProp="stockList" :currentStockProp="currentStock" :columns="columns" :drugListcolumns="drugListcolumns"/>
                         </div>`
 
     window.App = {
         template,
+        created() {
+          sendRequest(
+              api.stock.stockList,
+              null,
+              response => {
+                  this.stockList = response.data.Data
+                  if(this.stockList && this.stockList.length>0){
+                    this.currentStock = this.stockList[0]
+                  }
+              },
+              exception =>{
+              }
+          )
+      },
         data () {
             return {
-                columns: [
+              currentStock: null,
+              currentState: "1",
+              stockList: [],
+              columns: [
                     {
                       title: '单据号',
-                      dataIndex: 'no',
+                      dataIndex: 'No',
                       width: '15%',
-                      scopedSlots: { customRender: 'no' },
+                      scopedSlots: { customRender: 'No' },
                     },
                     {
                       title: '入库类型',
-                      dataIndex: 'type',
+                      dataIndex: 'TypeName',
                       width: '5%',
-                      scopedSlots: { customRender: 'type' },
+                      scopedSlots: { customRender: 'TypeName' },
                     },
                     {
                       title: '填单时间',
-                      dataIndex: 'time',
+                      dataIndex: 'CreateTime',
                       width: '10%',
-                      scopedSlots: { customRender: 'time' },
+                      scopedSlots: { customRender: 'CreateTime' },
                     },
                     {
                       title: '填单人',
-                      dataIndex: 'creator',
+                      dataIndex: 'Creator',
                       width: '5%',
-                      scopedSlots: { customRender: 'creator' },
+                      scopedSlots: { customRender: 'Creator' },
                     },
                     {
                       title: '审核时间',
-                      dataIndex: 'validateTime',
+                      dataIndex: 'AuditTime',
                       width: '10%',
-                      scopedSlots: { customRender: 'validateTime' },
+                      scopedSlots: { customRender: 'AuditTime' },
                     },
                     {
                       title: '审核人',
-                      dataIndex: 'validator',
+                      dataIndex: 'Auditor',
                       width: '5%',
-                      scopedSlots: { customRender: 'validator' },
+                      scopedSlots: { customRender: 'Auditor' },
                     },
                     {
                       title: '摘要',
-                      dataIndex: 'remark',
+                      dataIndex: 'Description',
                       width: '15%',
-                      scopedSlots: { customRender: 'remark' },
+                      scopedSlots: { customRender: 'Description' },
                     },
                     {
                       title: '状态',
-                      dataIndex: 'status',
+                      dataIndex: 'StatusDisplay',
                       width: '5%',
-                      scopedSlots: { customRender: 'status' },
+                      scopedSlots: { customRender: 'StatusDisplay' },
                     },
                     {
                       title: 'operation',
@@ -66,63 +83,63 @@
                   drugListcolumns: [
                     {
                       title: '序号',
-                      dataIndex: 'key',
+                      dataIndex: 'SNo',
                       width: '5%',
-                      scopedSlots: { customRender: 'key' },
+                      scopedSlots: { customRender: 'SNo' },
                     },
                     {
                       title: '药品',
-                      dataIndex: 'drugName',
+                      dataIndex: 'DrugName',
                       width: '10%',
-                      scopedSlots: { customRender: 'drugName' },
+                      scopedSlots: { customRender: 'DrugName' },
                     },
                     {
                       title: '生产批号',
-                      dataIndex: 'code',
+                      dataIndex: 'LotNo',
                       width: '15%',
-                      scopedSlots: { customRender: 'code' },
+                      scopedSlots: { customRender: 'LotNo' },
                     },
                     {
                       title: '失效日期',
-                      dataIndex: 'expireDate',
+                      dataIndex: 'ExpDate',
                       width: '10%',
-                      scopedSlots: { customRender: 'expireDate' },
+                      scopedSlots: { customRender: 'ExpDate' },
                     },
                     {
                       title: '数量',
-                      dataIndex: 'num',
+                      dataIndex: 'Quantity',
                       width: '5%',
-                      scopedSlots: { customRender: 'num' },
+                      scopedSlots: { customRender: 'Quantity' },
                     },
                     {
                       title: '单位',
-                      dataIndex: 'unit',
+                      dataIndex: 'Unit',
                       width: '5%',
-                      scopedSlots: { customRender: 'unit' },
+                      scopedSlots: { customRender: 'Unit' },
                     },
                     {
-                      title: '单价',
-                      dataIndex: 'price',
+                      title: '成本价',
+                      dataIndex: 'CostPrice',
                       width: '5%',
-                      scopedSlots: { customRender: 'price' },
+                      scopedSlots: { customRender: 'CostPrice' },
                     },
                     {
-                      title: '金额',
-                      dataIndex: 'fee',
+                      title: '成本金额',
+                      dataIndex: 'Cost',
                       width: '5%',
-                      scopedSlots: { customRender: 'fee' },
+                      scopedSlots: { customRender: 'Cost' },
                     },
                     {
                         title: '货位号',
-                        dataIndex: 'position',
+                        dataIndex: 'AllocationNo',
                         width: '5%',
-                        scopedSlots: { customRender: 'position' },
+                        scopedSlots: { customRender: 'AllocationNo' },
                     },
                     {
                         title: '备注',
-                        dataIndex: 'remark',
+                        dataIndex: 'Description',
                         width: '10%',
-                        scopedSlots: { customRender: 'remark' },
+                        scopedSlots: { customRender: 'Description' },
                     },
                     {
                         title: 'operation',
@@ -133,7 +150,6 @@
             }
         },
         methods: {
-            
             confirm() {
                 this.$confirm({
                   title: 'Confirm',
@@ -141,7 +157,15 @@
                   okText: '确认',
                   cancelText: '取消',
                 });
-              },
+            },
+            selectStock (id) {
+              this.currentStock = this.stockList.find(item => item.ID === id)
+              PubSub.publish('conditionChange', id)
+            },
+            selectState(state) {
+              this.currentState = state
+              PubSub.publish('conditionChange', state)
+            }
         },
         // created() {
         //     PubSub.subscribe('NewDrugEditor',  (event, num) => {
