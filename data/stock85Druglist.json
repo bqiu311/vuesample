@@ -1,18 +1,20 @@
 [
     {
-        "key": 1,
-        "drugName": "胰岛素",
-        "code": "20193jdqqe1dc",
-        "expireDate": "20190908",
-        "unit": "支",
-        "price": 120.0
+        "DID": 2,
+        "DrugName": "胰岛素",
+        "SNo": "222",
+        "ExpDate": "20190908",
+        "Unit": "支",
+        "LotNo": "1122211",
+        "CostPrice": 120.0
     },
     {
-        "key": 2,
-        "drugName": "急支糖浆",
-        "code": "20193jdqqe1aee",
-        "expireDate": "20170908",
-        "unit": "盒",
-        "price": 20.0
+        "DID": 3,
+        "DrugName": "急支糖浆",
+        "SNo": "333",
+        "ExpDate": "20190908",
+        "Unit": "盒",
+        "LotNo": "221133",
+        "CostPrice": 20.2
     }
   ]

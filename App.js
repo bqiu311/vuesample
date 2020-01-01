@@ -29,19 +29,19 @@
                     {
                       title: '单据号',
                       dataIndex: 'No',
-                      width: '15%',
+                      width: '10%',
                       scopedSlots: { customRender: 'No' },
                     },
                     {
                       title: '入库类型',
                       dataIndex: 'TypeName',
-                      width: '5%',
+                      width: '10%',
                       scopedSlots: { customRender: 'TypeName' },
                     },
                     {
                       title: '填单时间',
                       dataIndex: 'CreateTime',
-                      width: '10%',
+                      width: '15%',
                       scopedSlots: { customRender: 'CreateTime' },
                     },
                     {
@@ -53,7 +53,7 @@
                     {
                       title: '审核时间',
                       dataIndex: 'AuditTime',
-                      width: '10%',
+                      width: '15%',
                       scopedSlots: { customRender: 'AuditTime' },
                     },
                     {
@@ -71,7 +71,7 @@
                     {
                       title: '状态',
                       dataIndex: 'StatusDisplay',
-                      width: '5%',
+                      width: '10%',
                       scopedSlots: { customRender: 'StatusDisplay' },
                     },
                     {
@@ -96,7 +96,7 @@
                     {
                       title: '生产批号',
                       dataIndex: 'LotNo',
-                      width: '15%',
+                      width: '10%',
                       scopedSlots: { customRender: 'LotNo' },
                     },
                     {
@@ -108,7 +108,7 @@
                     {
                       title: '数量',
                       dataIndex: 'Quantity',
-                      width: '5%',
+                      width: '10%',
                       scopedSlots: { customRender: 'Quantity' },
                     },
                     {

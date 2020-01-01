@@ -1,18 +1,20 @@
 [
     {
-        "key": 1,
-        "drugName": "头孢克苏颗粒",
-        "code": "20193jdqqe1dc",
-        "expireDate": "20190908",
-        "unit": "盒",
-        "price": 40.0
+        "DID": 1,
+        "DrugName": "头孢克苏颗粒",
+        "SNo": "344",
+        "ExpDate": "20190908",
+        "Unit": "盒",
+        "LotNo": "33422",
+        "CostPrice": 40.0
     },
     {
-        "key": 2,
-        "drugName": "头孢克肟咀嚼片",
-        "code": "20193jdqqe1aee",
-        "expireDate": "20170908",
-        "unit": "盒",
-        "price": 60.0
+        "DID": 2,
+        "DrugName": "头孢克肟咀嚼片",
+        "SNo": "213",
+        "ExpDate": "20190908",
+        "Unit": "盒",
+        "LotNo": "11338",
+        "CostPrice": 80.0
     }
   ]
