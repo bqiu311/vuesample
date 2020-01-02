@@ -1,5 +1,16 @@
 ; (function () {
   const template = `<div>
+                          药房
+                          <a-select defaultValue="中药库" @change="handleStockChange">
+                              <a-select-option v-for="d in stockListProp" :key="d.ID" :value="d.ID">{{d.Name}}</a-select-option>
+                          </a-select>
+                        时间范围:
+                        审核状态:
+                        <a-select defaultValue="1" style="width: 120px" @change="handleStateChange">
+                          <a-select-option value="2">已审核</a-select-option>
+                          <a-select-option value="1">未审核</a-select-option>
+                        </a-select>
+                        <a-button type="primary" @click="newDrug">新增</a-button>
                           <a-table :columns="columns" :dataSource="data" :customRow="rowClick" bordered>
                             <template slot="operation" slot-scope="text, record, index">
                               <div class="editable-row-operations">
@@ -11,7 +22,6 @@
                           </a-table>
                           <a-table :columns="drugListcolumns" :dataSource="drugDetailsData" bordered />
                             <drug-details :stockListProp="stockListProp" :currentStockProp="currentStockProp" :drugListcolumnsProp="drugListcolumns" :drugDetailsDataProp="drugDetailsData"/>
-                            
                     </div>`
   window.OrderList = {
     props: {
@@ -19,7 +29,8 @@
       drugListcolumns: Array,
       currentStockProp: Object,
       currentStateProp: String,
-      stockListProp: Array
+      stockListProp: Array,
+      stockListProp: Array,
     },
     components: {
       DrugDetails
@@ -57,7 +68,18 @@
       })
     },
     methods: {
-      fetchOrderDrugDeOrdertails(orderId,callback) {
+      handleStockChange(id) {
+        // const target = this.stockListProp.find(item => item.ID === id);
+        //PubSub.publish('stockChange', target)
+        this.$emit('select_stock', id)
+      },
+      handleStateChange(value) {
+        this.$emit('select_state', value)
+      },
+      newDrug() {
+        PubSub.publish('NewDrugEditor', 1)
+      },
+      fetchOrderDrugDeOrdertails(orderId, callback) {
         this.drugDetailsData = []
 
         sendRequest(
@@ -66,7 +88,7 @@
           response => {
             console.log("单据明细列表", response.data.Data)
             this.drugDetailsData = response.data.Data
-            if(callback){
+            if (callback) {
               callback(response.data.Data)
             }
           },
@@ -75,7 +97,7 @@
         )
       },
       edit(key) {
-        this.fetchOrderDrugDeOrdertails(key,response => {
+        this.fetchOrderDrugDeOrdertails(key, response => {
           PubSub.publish('DrugEdit', [])
         })
       }
