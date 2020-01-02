@@ -1,4 +1,4 @@
-; (function () {
+(function() {
   const template = `<div>
                       <a-modal 
                       :maskClosable="maskClosable" 
@@ -18,7 +18,7 @@
                             <template slot="DrugName" slot-scope="text, record">
                                 <div class="editable-cell">
                                     <a-select :defaultValue="record.DrugName" v-if="record.editable" style="width: 120px" @change="value => handleChange(value, record.ID)">
-                                      <a-select-option v-for="d in stockDrugList" :key="d.DID" :value="d.DID">{{d.DrugName}}</a-select-option>
+                                      <a-select-option v-for="d in stockDrugList" :key="d.ID" :value="d.ID">{{d.DrugName}}</a-select-option>
                                     </a-select>
                                     <template v-else>
                                       {{record.DrugName}}
@@ -46,14 +46,14 @@
                             </template>
                         </a-table>
                       </a-modal>
-                    </div>`
+                    </div>`;
 
   window.DrugDetails = {
     props: {
       drugListcolumnsProp: Array,
       drugDetailsDataProp: Array,
       currentStockProp: Object,
-      stockListProp: Array,
+      stockListProp: Array
     },
     template,
     data() {
@@ -68,44 +68,43 @@
         rowClick: record => ({
           on: {
             dblclick: () => {
-              this.edit(record.ID)
+              this.edit(record.ID);
             }
           }
         })
-      }
+      };
     },
     updated() {
       if (this.currentStockId === 0) {
-        this.currentStockId = this.currentStockProp.ID
+        this.currentStockId = this.currentStockProp.ID;
       }
     },
     created() {
       PubSub.subscribe('DrugEdit', (event, drugDetailsData) => {
-        this.visible = true
+        this.visible = true;
         if (!drugDetailsData || drugDetailsData.length === 0) {
-          this.drugDetailsData = this.drugDetailsDataProp
+          this.drugDetailsData = this.drugDetailsDataProp;
         } else {
-          this.drugDetailsData = drugDetailsData
+          this.drugDetailsData = drugDetailsData;
         }
-      })
+      });
 
       PubSub.subscribe('NewDrugEditor', (event, num) => {
-        this.visible = true
-        this.drugDetailsData = []
-      })
-      this.getDrugList()
+        this.visible = true;
+        this.drugDetailsData = [];
+      });
+      this.getDrugList();
     },
     methods: {
       handleOk() {
         this.confirmLoading = true;
-
 
         sendRequest(
           api.stock.GetDrugOtherInStorageID,
           null,
           response => {
             //组装单据
-            console.log("获取单据ID", response.data.Data)
+            console.log('获取单据ID', response.data.Data);
 
             setTimeout(() => {
               this.$message.info(`保存成功`);
@@ -117,8 +116,7 @@
             this.visible = false;
             this.confirmLoading = false;
           }
-        )
-
+        );
       },
       handleCancel(e) {
         this.visible = false;
@@ -137,17 +135,16 @@
           api.stock.GetDrugList,
           null,
           response => {
-            console.log("药房在用药品", response.data)
-            this.stockDrugList = response.data
+            console.log('药房在用药品', response.data);
+            this.stockDrugList = response.data.Data;
           },
-          exception => {
-          }
-        )
+          exception => {}
+        );
       },
       handleCurrentStockChange(id) {
-        this.currentStockId = id
-        this.currentStock = this.stockListProp.find(item => item.ID === id)
-        this.getDrugList()
+        this.currentStockId = id;
+        this.currentStock = this.stockListProp.find(item => item.ID === id);
+        this.getDrugList();
       },
       onDelete(record) {
         const dataSource = [...this.drugDetailsData];
@@ -162,7 +159,7 @@
               ID: response.data.Data,
               DrugName: '',
               LotNo: '',
-              ExpDate: "",
+              ExpDate: '',
               Quantity: 0,
               Unit: '',
               CostPrice: 0.0,
@@ -170,20 +167,20 @@
               AllocationNo: '',
               Description: '',
               editable: true
-            })
+            });
           },
-          exception => {
-          }
-        )
+          exception => {}
+        );
       },
       handleChange(value, id) {
         const newData = [...this.drugDetailsData];
-        const newDrug = this.stockDrugList.find(item => value === item.DID)
-        const target = newData.find(item => id === item.ID)
+        const newDrug = this.stockDrugList.find(item => value === item.DID);
+        const target = newData.find(item => id === item.ID);
         if (target) {
-          Object.assign(target, newDrug)
-          target['Cost'] = parseFloat(target.Quantity) * parseFloat(target.CostPrice);
-          this.drugDetailsData = newData
+          Object.assign(target, newDrug);
+          target['Cost'] =
+            parseFloat(target.Quantity) * parseFloat(target.CostPrice);
+          this.drugDetailsData = newData;
         }
       },
       edit(id) {
@@ -195,5 +192,5 @@
         }
       }
     }
-  }
-})()
+  };
+})();
