@@ -1,7 +1,14 @@
 ;(function () {
     const template = `<div id="#app">
-                            <title-select @select_state="selectState" @select_stock="selectStock" :stockListProp="stockList"/>
-                            <order-list :currentStateProp="currentState" :stockListProp="stockList" :currentStockProp="currentStock" :columns="columns" :drugListcolumns="drugListcolumns"/>
+                            <order-list 
+                              @select_state="selectState" 
+                              @select_stock="selectStock" 
+                              :stockListProp="stockList" 
+                              :currentStateProp="currentState" 
+                              :stockListProp="stockList" 
+                              :currentStockProp="currentStock" 
+                              :columns="columns" 
+                              :drugListcolumns="drugListcolumns"/>
                         </div>`
 
     window.App = {
