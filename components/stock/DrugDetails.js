@@ -1,4 +1,4 @@
-(function() {
+(function () {
   const template = `<div>
                       <a-modal 
                       :maskClosable="maskClosable" 
@@ -17,7 +17,7 @@
                         <a-table :customRow="rowClick" rowKey="ID" bordered :dataSource="drugDetailsData" :columns="drugListcolumnsProp">
                             <template slot="DrugName" slot-scope="text, record">
                                 <div class="editable-cell">
-                                    <a-select :defaultValue="record.DrugName" v-if="record.editable" style="width: 120px" @change="value => handleChange(value, record.ID)">
+                                    <a-select :defaultValue="record.DrugName" v-if="record.editable" style="width: 100%" @change="value => handleChange(value, record.ID)">
                                       <a-select-option v-for="d in stockDrugList" :key="d.ID" :value="d.ID">{{d.DrugName}}</a-select-option>
                                     </a-select>
                                     <template v-else>
@@ -71,7 +71,27 @@
               this.edit(record.ID);
             }
           }
-        })
+        }),
+        DrugDetailSchema: {
+          actions:{
+            getDrugOtherInStorageDetailID: {
+              url: `${baseUrl}/api/DrugOtherInStorage/GetDrugOtherInStorageDetailID`,
+              method: 'Get'
+            },
+            getDrugOtherInStorageID: {
+              url: `${baseUrl}/api/DrugOtherInStorage/GetDrugOtherInStorageID`,
+              method: 'Get'
+            },
+            saveDrugs: {
+              url: `${baseUrl}/api/DrugOtherInStorage/SaveDrugOtherInStorage`,
+              method: 'Post'
+            },
+            getDrugList: {
+              url: `${baseUrl}/api/DrugStore/GetDrugsByStorehouseID`,
+              method: 'Get'
+            }
+          }
+        }
       };
     },
     updated() {
@@ -82,35 +102,72 @@
     created() {
       PubSub.subscribe('DrugEdit', (event, drugDetailsData) => {
         this.visible = true;
+        this.currentStockId = this.currentStockProp.ID;
+        this.currentStock = this.currentStockProp;
         if (!drugDetailsData || drugDetailsData.length === 0) {
           this.drugDetailsData = this.drugDetailsDataProp;
         } else {
           this.drugDetailsData = drugDetailsData;
         }
+        this.getDrugList();
       });
 
       PubSub.subscribe('NewDrugEditor', (event, num) => {
         this.visible = true;
+        this.currentStockId = this.currentStockProp.ID;
+        this.currentStock = this.currentStockProp;
         this.drugDetailsData = [];
+        this.getDrugList();
       });
-      this.getDrugList();
     },
     methods: {
+      save(data) {
+        sendRequest(
+          this.DrugDetailSchema.actions.saveDrugs.url,
+          data,
+          response => {
+            this.$message.info(`保存成功`);
+            this.visible = false;
+              this.confirmLoading = false;
+          },
+          exception => { }
+        )
+      },
       handleOk() {
         this.confirmLoading = true;
 
         sendRequest(
-          api.stock.GetDrugOtherInStorageID,
+          this.url.getDrugOtherInStorageID,
           null,
           response => {
             //组装单据
             console.log('获取单据ID', response.data.Data);
 
-            setTimeout(() => {
-              this.$message.info(`保存成功`);
-              this.visible = false;
-              this.confirmLoading = false;
-            }, 2000);
+            let data = {
+              Status: '1',
+              ID: response.data.Data,
+              No: response.data.Data,
+              StorehouseID: this.currentStock.ID,
+              Storehouse: this.currentStock.Name,
+              TypeCode: 'csrk',
+              TypeName: '初始入库',
+              Description: '',
+              CreatorID: 'ADMIN',
+              Creator: 'ADMIN',
+              AuditorID: 'ADMIN',
+              Auditor: '审核者',
+              CreateTime: '2020-01-01',
+              AuditTime: '2020-01-01',
+              SaveSign: '1',
+              DrugOtherInStorageDetail: [...this.drugDetailsData]
+            }
+
+            this.save(data)
+            // setTimeout(() => {
+            //   this.$message.info(`保存成功`);
+            //   this.visible = false;
+            //   this.confirmLoading = false;
+            // }, 2000);
           },
           exception => {
             this.visible = false;
@@ -132,14 +189,21 @@
       },
       getDrugList() {
         sendRequest(
-          api.stock.GetDrugList,
-          null,
+          this.url.getDrugList,
+          [{ "key": "storehouseID","value": this.currentStockId }],
           response => {
             console.log('药房在用药品', response.data);
-            this.stockDrugList = response.data.Data;
+
+            const result = response.data.Data.filter(item => {
+              if (!(this.drugDetailsData.find(x => x.DrugID === item.ID))) {
+                return true;
+              }
+            });
+
+            this.stockDrugList = result;
           },
-          exception => {}
-        );
+          exception => { }
+        )
       },
       handleCurrentStockChange(id) {
         this.currentStockId = id;
@@ -152,7 +216,7 @@
       },
       handleAdd() {
         sendRequest(
-          api.stock.GetDrugOtherInStorageDetailID,
+          this.url.getDrugOtherInStorageDetailID,
           null,
           response => {
             this.drugDetailsData.push({
@@ -169,17 +233,24 @@
               editable: true
             });
           },
-          exception => {}
+          exception => { }
         );
       },
       handleChange(value, id) {
         const newData = [...this.drugDetailsData];
-        const newDrug = this.stockDrugList.find(item => value === item.DID);
+        const newDrug = this.stockDrugList.find(item => value === item.ID);
         const target = newData.find(item => id === item.ID);
         if (target) {
-          Object.assign(target, newDrug);
+          const num = target.Quantity
+          Object.assign(target,newDrug);
+          target.Quantity = num
+          target.DrugID = newDrug.ID
           target['Cost'] =
             parseFloat(target.Quantity) * parseFloat(target.CostPrice);
+            // StorehouseUnit
+          target.Unit = newDrug.StorehouseUnit
+          // target = newDrug
+          target.ID = id
           this.drugDetailsData = newData;
         }
       },
